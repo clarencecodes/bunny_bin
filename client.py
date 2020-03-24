@@ -8,6 +8,8 @@ TRASHBIN = 'blue'
 
 divider = MCP3008(0)
 
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.connect((HOST, PORT))
 while True:
     print(divider.value)
     
@@ -15,11 +17,7 @@ while True:
         print("A lot of rubbish! Sending message to server...")
         data = pickle.dumps(TRASHBIN)
 
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.connect((HOST, PORT))
         server.send(data)
-        server.recv()
-        server.close()
-        # FIXME: while loop gets stuck here... cause of bug is either on client.py or server.py
 
     time.sleep(1)
+server.close()
