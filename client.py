@@ -1,16 +1,25 @@
-import time
+import time, socket, pickle
 from gpiozero import MCP3008
- 
+
+HOST = '172.20.10.13' # IP Address of device running server.py
+PORT = 12346
+
+TRASHBIN = 'blue'
+
 divider = MCP3008(0)
 
 while True:
     print(divider.value)
-    # print(str(28250/(divider.value-229.5))+"centimeters")
+    
+    if divider.value > 0.7:
+        print("A lot of rubbish! Sending message to server...")
+        data = pickle.dumps(TRASHBIN)
 
-    # v = (divider.value / 1023.0) * 3.3
-    # dist = 16.2537 * v ** 4 - 129.893 * v ** 3 + 382.268 * v ** 2 - 512.611 * v + 301.439
-
-    # print(str(round(divider.value / 0.05) * 0.05))
-    # print("Distance {:.2f}".format(dist))
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.connect((HOST, PORT))
+        server.send(data)
+        server.recv()
+        server.close()
+        # FIXME: while loop gets stuck here... cause of bug is either on client.py or server.py
 
     time.sleep(1)
