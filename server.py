@@ -4,9 +4,18 @@ from twilio.rest import Client
 HOST = '0.0.0.0'
 PORT = 12346
 
-TRASHBINS = {
-    "blue": "Ang Mo Kio",
-    "orange": "Orchard Road"
+class TrashBin:
+    def __init__(self, color_code, location):
+        self.color_code = color_code
+        self.location = location
+        self.bin_full_request_count = 0
+
+blue = TrashBin("blue", "Ang Mo Kio")
+orange = TrashBin("orange", "Orchard Road")
+
+TRASH_BINS = {
+    "blue": blue,
+    "orange": orange
 }
 
 def clientthread(conn, addr):
@@ -20,9 +29,18 @@ def clientthread(conn, addr):
                 deserialized_message = pickle.loads(message)
                 print(deserialized_message)
 
-                if deserialized_message in TRASHBINS:
-                    print("Sending HTTP request to Twilio...")
-                    triggerSMSToCleaner(TRASHBINS[deserialized_message], '+65')
+                if deserialized_message in TRASH_BINS:
+                    color_code = deserialized_message
+
+                    # To ensure that the infrared sensor isn't being tampered with, only trigger the SMS when we know
+                    # that the trash bin is really full, and only after multiple (10) requests from the client
+                    if TRASH_BINS[color_code].bin_full_request_count is 10:
+                        print(f"Sending SMS to cleaner and resetting {color_code} bin full request count")
+                        triggerSMSToCleaner(TRASH_BINS[color_code].location, '+65redacted')
+                        TRASH_BINS[color_code].bin_full_request_count = 0
+                    else:
+                        TRASH_BINS[color_code].bin_full_request_count += 1
+                        print(f"Incremented {color_code} bin full request count to {TRASH_BINS[color_code].bin_full_request_count}")
 
         except:
             continue
