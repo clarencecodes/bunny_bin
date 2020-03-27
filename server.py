@@ -17,7 +17,7 @@ yellow = TrashBin("yellow", "Changi Airport")
 
 TRASH_BINS = {
     "blue": blue,
-    "orange": orange
+    "orange": orange,
     "yellow": yellow
 }
 
