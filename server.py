@@ -1,5 +1,6 @@
-import socket, pickle, threading
+import socket, pickle
 from twilio.rest import Client
+import _thread
 
 HOST = '0.0.0.0'
 PORT = 12345
@@ -12,10 +13,12 @@ class TrashBin:
 
 blue = TrashBin("blue", "Ang Mo Kio")
 orange = TrashBin("orange", "Orchard Road")
+yellow = TrashBin("yellow", "Changi Airport")
 
 TRASH_BINS = {
     "blue": blue,
     "orange": orange
+    "yellow": yellow
 }
 
 def clientthread(conn, addr):
@@ -59,13 +62,14 @@ def triggerSMSToCleaner(dustbin_location, mobile_number):
 
     print(message.sid)
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((HOST, PORT))
-server.listen()
-while True:
-    conn, addr = server.accept()
-    thread = threading.Thread(clientthread(conn, addr))
-    thread.start()
-
-conn.close()
-server.close()
+try:
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((HOST, PORT))
+    server.listen()
+    while True:
+        conn, addr = server.accept()
+        _thread.start_new_thread(clientthread, (conn, addr))
+    conn.close()
+    server.close()
+except KeyboardInterrupt:
+    exit(0)
