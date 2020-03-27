@@ -2,7 +2,7 @@ import socket, pickle, threading
 from twilio.rest import Client
 
 HOST = '0.0.0.0'
-PORT = 12346
+PORT = 12345
 
 class TrashBin:
     def __init__(self, color_code, location):

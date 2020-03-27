@@ -2,7 +2,7 @@ import time, socket, pickle
 from gpiozero import MCP3008
 
 HOST = '172.20.10.13' # IP Address of device running server.py
-PORT = 12346
+PORT = 12345
 
 TRASHBIN = 'blue'
 
