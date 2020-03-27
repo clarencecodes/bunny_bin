@@ -1,15 +1,22 @@
 import socket, pickle
 from twilio.rest import Client
 import _thread
-
-HOST = '0.0.0.0'
-PORT = 12345
+import sys
 
 class TrashBin:
     def __init__(self, color_code, location):
         self.color_code = color_code
         self.location = location
         self.bin_full_request_count = 0
+
+# checks whether sufficient arguments have been provided
+if len(sys.argv) != 3:
+    print("Invalid Command")
+    print("Format: server <HOST IP> <PORT NUMBER>")
+    exit()
+
+IP_address = str(sys.argv[1])
+Port = int(sys.argv[2])
 
 blue = TrashBin("blue", "Ang Mo Kio")
 orange = TrashBin("orange", "Orchard Road")
@@ -64,7 +71,7 @@ def triggerSMSToCleaner(dustbin_location, mobile_number):
 
 try:
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((HOST, PORT))
+    server.bind((IP_address, Port))
     server.listen()
     while True:
         conn, addr = server.accept()
